@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gjw.gjwblog.dao.AboutMapper">
+
+
+    <resultMap id="aboutListReturn" type="com.gjw.gjwblog.vo.AboutListReturn">
+        <id property="aboutId" column="about_id" javaType="integer"/>
+        <result property="aboutTitle" column="about_title" javaType="string"/>
+        <result property="aboutRead" column="about_read" javaType="integer"/>
+        <result property="aboutCreateTime" column="gmt_create" javaType="string"/>
+        <result property="aboutModifiedTime" column="gmt_modified" javaType="string"/>
+    </resultMap>
+
+    <resultMap id="aboutEditResultMap" type="com.gjw.gjwblog.vo.resultmap.AboutEditResultMap">
+        <id property="aboutId" column="about_id" javaType="integer"/>
+        <result property="aboutTitle" column="about_title" javaType="string"/>
+        <result property="aboutPath" column="about_path" javaType="string"/>
+    </resultMap>
+    <resultMap id="aboutHtmlResultMap" type="com.gjw.gjwblog.vo.resultmap.AboutHtmlResultMap">
+        <result property="aboutTitle" column="about_title" javaType="string"/>
+        <result property="aboutPath" column="about_path" javaType="string"/>
+    </resultMap>
+    <insert id="insertOneAbout" parameterType="com.gjw.gjwblog.entity.About" useGeneratedKeys="true"
+            keyProperty="aboutId">
+        insert into bl_about (about_title,about_path,about_read,gmt_create,gmt_modified,about_version,is_deleted)
+        values
+        (#{about.aboutTitle},#{about.aboutPath},#{about.aboutRead},#{about.aboutCreateTime},#{about.aboutModifiedTime},#{about.aboutVersion},#{about.isDeleted})
+    </insert>
+
+    <select id="countAboutByAboutTitle" parameterType="string" resultType="integer">
+        select count(1) from bl_about
+        where is_deleted=0 and about_title=#{aboutTitle}
+    </select>
+
+    <select id="getAllAboutListReturnByCondition" parameterType="com.gjw.gjwblog.vo.AboutParam"
+            resultMap="aboutListReturn">
+        select about_id,about_title,about_read,gmt_create,gmt_modified from bl_about
+        where is_deleted=0
+        <if test="aboutParam.title!=''">
+            and about_title like concat('%',#{aboutParam.title},'%')
+        </if>
+        <if test="aboutParam.begin!='' and aboutParam.end!='' ">
+            and gmt_create between #{aboutParam.begin} and #{aboutParam.end}
+        </if>
+    </select>
+
+    <update id="editOneAbout" parameterType="com.gjw.gjwblog.vo.resultmap.AboutEditParamType">
+        update bl_about set about_title=#{aboutEditParamType.aboutTitle},
+        about_path=#{aboutEditParamType.aboutPath},
+        gmt_modified=#{aboutEditParamType.aboutModifiedTime}
+        where about_id=#{aboutEditParamType.aboutId}
+    </update>
+
+    <select id="getAboutTitleById" parameterType="integer" resultType="string">
+        select about_title from bl_about where is_deleted=0 and about_id=#{aboutId}
+    </select>
+
+    <select id="getAboutNumber" parameterType="string" resultType="integer">
+        select count(1) from bl_about where is_deleted=0 and about_title=#{aboutTitle}
+    </select>
+
+    <select id="getAboutById" parameterType="integer" resultMap="aboutEditResultMap">
+        select about_id,about_title,about_path from bl_about
+        where is_deleted=0 and about_id=#{aboutId}
+    </select>
+
+    <select id="getAboutHtml" parameterType="integer" resultMap="aboutHtmlResultMap">
+        select about_title,about_path from bl_about
+        where is_deleted=0 and about_id=#{aboutId}
+    </select>
+
+    <update id="deleteOneAbout" parameterType="integer">
+        update bl_about set is_deleted=1 where about_id=#{aboutId}
+    </update>
+
+    <update id="deleteAllAbout">
+        update bl_about set is_deleted=1
+    </update>
+
+    <update id="returnAllAbout">
+        update bl_about set is_deleted=0
+    </update>
+
+    <select id="countAboutById" parameterType="integer" resultType="integer">
+        select count(1) from bl_about where about_id=#{aboutId} and is_deleted=0
+    </select>
+
+    <select id="countAbout" resultType="integer">
+        select count(1) from bl_about where is_deleted=0
+    </select>
+</mapper>

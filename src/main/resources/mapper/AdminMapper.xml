@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gjw.gjwblog.dao.AdminMapper">
+
+    <select id="findAdminByToken" parameterType="string" resultType="com.gjw.gjwblog.vo.AdminReturn">
+        select name,header,username from bl_admin
+        where token=#{token}
+    </select>
+
+    <select id="findTokenByUserNameAndPassword" parameterType="string" resultType="string">
+        select username from bl_admin where username=#{username} and password=#{password}
+    </select>
+
+    <insert id="updateTokenToAdmin" parameterType="string">
+        update bl_admin set token=#{token} where username=#{username}
+    </insert>
+</mapper>
